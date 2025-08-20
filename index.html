@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ДронСкан</title>
+  <meta name="description"
+    content="ДронСкан: интегрированная мультиагентная система планирования миссий для роя квадрокоптеров. Автономность, координация и компьютерное зрение.">
+  <meta name="theme-color" content="#0d1117">
+  <!-- Open Graph -->
+  <meta property="og:title" content="ДронСкан — мультиагентная система планирования миссий">
+  <meta property="og:description" content="Автономное планирование, взаимодействие дронов и компьютерное зрение.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/cover.jpg">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Fonts (optional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="img/favico.png" type="img/png">
+  <style>
+    :root {
+      --bg: #0d1117;
+      /* общий фон */
+      --card: #111827;
+      /* фон карточек */
+      --text: #e5e7eb;
+      /* основной текст */
+      --muted: #9ca3af;
+      /* вторичный */
+      --brand: #22d3ee;
+      /* акцент (циан) */
+      --brand-2: #8b5cf6;
+      /* второй акцент (фиолет) */
+      --border: #1f2937;
+    }
+
+    html,
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial;
+    }
+
+    .navbar {
+      background: rgba(13, 17, 23, .7) !important;
+      backdrop-filter: saturate(180%) blur(12px);
+    }
+
+    .navbar .nav-link {
+      color: var(--text) !important;
+      opacity: .85
+    }
+
+    .navbar .nav-link:hover {
+      opacity: 1;
+      color: var(--brand) !important
+    }
+
+    .btn-brand {
+      --bs-btn-bg: linear-gradient(135deg, var(--brand), var(--brand-2));
+      --bs-btn-border-color: transparent;
+      --bs-btn-hover-bg: linear-gradient(135deg, var(--brand-2), var(--brand));
+      --bs-btn-hover-border-color: transparent;
+      color: #5c81df;
+      font-weight: 700;
+      border: 0;
+      box-shadow: 0 10px 25px rgba(34, 211, 238, .25);
+    }
+
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--text)
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(80rem 40rem at 70% 10%, rgba(139, 92, 246, .08), transparent 60%),
+        radial-gradient(80rem 40rem at 30% 90%, rgba(34, 211, 238, .08), transparent 60%);
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      opacity: .18;
+      object-fit: cover;
+      filter: saturate(0.9) contrast(1.05) brightness(.8);
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+    }
+
+    .section {
+      padding: 80px 0
+    }
+
+    .section h2 {
+      font-weight: 800;
+      letter-spacing: .2px;
+      margin-bottom: 1rem
+    }
+
+    .lead-muted {
+      color: var(--muted)
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .icon-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(34, 211, 238, .15), rgba(139, 92, 246, .15));
+      color: #fff;
+      font-size: 22px;
+      border: 1px solid var(--border)
+    }
+
+    .badge-tech {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: rgba(255, 255, 255, .02)
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 32px 0
+    }
+
+    .steps .step {
+      border-left: 2px dashed var(--border);
+      padding-left: 16px;
+      margin-left: 8px
+    }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      color: var(--muted)
+    }
+
+    .shadow-soft {
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .35)
+    }
+
+    .scrolltop {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1000;
+      display: none
+    }
+
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      display: inline-block;
+      margin: 0 6px
+    }
+
+    a {
+      color: #93c5fd
+    }
+
+    a:hover {
+      color: #bfdbfe
+    }
+
+    .form-control,
+    .form-select {
+      background: #0b1220;
+      border: 1px solid var(--border);
+      color: var(--text)
+    }
+
+    .form-control:focus {
+      border-color: #2563eb;
+      box-shadow: none
+    }
+
+    .kpi {
+      font-size: 28px;
+      font-weight: 800
+    }
+  </style>
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="80">
+
+  <!-- NAV -->
+  <nav id="mainNav" class="navbar navbar-expand-lg fixed-top py-2">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-white" href="#">
+        <img class="img-fluid" width="50px" src="img/favico.png" alt=""> ДронСкан
+      </a>
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+        <i class="bi bi-list fs-1"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#product">Продукт</a></li>
+          <li class="nav-item"><a class="nav-link" href="#mvp">MVP</a></li>
+          <li class="nav-item"><a class="nav-link" href="#usecases">Применение</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tech">Технологии</a></li>
+          <li class="nav-item"><a class="nav-link" href="#benefits">Преимущества</a></li>
+          <li class="nav-item"><a class="nav-link" href="#market">Рынок</a></li>
+          <li class="nav-item"><a class="nav-link" href="#team">Команда</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Контакты</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero position-relative">
+    <!-- Замените на свой ролик/обложку -->
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="assets/hero.mp4" type="video/mp4">
+    </video>
+
+    <div class="container position-relative">
+      <div class="row align-items-center justify-content-center text-center">
+        <div class="col-lg-9">
+          <div class="p-4 p-md-5 glass shadow-soft">
+            <h1 class="display-5 fw-bold">
+              Интеллектуальная <span class="gradient-text">мультиагентная</span> система планирования миссий для роя
+              квадрокоптеров
+            </h1>
+            <p class="lead lead-muted mt-3">
+              Координация, автономность и компьютерное зрение для исследований и спасательных операций в труднодоступных
+              условиях.
+            </p>
+            <div class="d-flex gap-3 justify-content-center mt-4">
+              <a href="#mvp" class="btn btn-brand btn-lg px-4"><i class="bi bi-rocket-takeoff me-2"></i>Смотреть MVP</a>
+              <a href="#contact" class="btn btn-ghost btn-lg px-4"><i class="bi bi-envelope me-2"></i>Связаться</a>
+            </div>
+            <div class="row text-center mt-4 g-3">
+              <div class="col-4">
+
+                <div class="small lead-muted">быстрее планирование</div>
+              </div>
+              <div class="col-4">
+
+                <div class="small lead-muted">автономные миссии</div>
+              </div>
+              <div class="col-4">
+
+                <div class="small lead-muted">снижение рисков</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PRODUCT -->
+  <section id="product" class="section">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <h2 class="fw-bold">О продукте</h2>
+          <p class="lead lead-muted">
+            ДронСкан — программная платформа, которая позволяет рою дронов взаимодействовать между собой и окружением,
+            автономно
+            планировать маршруты и выполнять задачи в условиях ограниченной связи и высокой неопределённости.
+          </p>
+
+          <div class="row g-3 mt-2">
+            <div class="col-md-6">
+              <div class="d-flex align-items-start gap-3">
+                <div class="icon-badge"><i class="bi bi-diagram-3"></i></div>
+                <div>
+                  <div class="fw-semibold">Координация роя</div>
+                  <div class="small lead-muted">Обмен задачами, предотвращение конфликтов, распределение ролей.</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="d-flex align-items-start gap-3">
+                <div class="icon-badge"><i class="bi bi-robot"></i></div>
+                <div>
+                  <div class="fw-semibold">Компьютерное зрение</div>
+                  <div class="small lead-muted">Обнаружение объектов, слежение, семантические карты местности.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <ul class="list-unstyled d-flex flex-wrap gap-2">
+            <li><span class="badge rounded-pill badge-tech">Python 3.10+</span></li>
+            <li><span class="badge rounded-pill badge-tech">djitellopy (DJI Tello)</span></li>
+            <li><span class="badge rounded-pill badge-tech">OpenCV</span></li>
+            <li><span class="badge rounded-pill badge-tech">PyAV</span></li>
+            <li><span class="badge rounded-pill badge-tech">NumPy</span></li>
+            <li><span class="badge rounded-pill badge-tech">PyTorch</span></li>
+            <li><span class="badge rounded-pill badge-tech">FastAPI / WebSocket</span></li>
+          </ul>
+
+        </div>
+        <div class="col-lg-6">
+          <video src="1.mp4" autoplay muted></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MVP -->
+  <section id="mvp" class="section">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-4">Что мы предлагаем</h2>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="icon-badge"><i class="bi bi-check2-circle"></i></div>
+                <h5 class="mb-0">Сделано</h5>
+              </div>
+              <ul class="small lead-muted mb-0">
+                <li>Прототип ПО для симуляции роя</li>
+                <li>Тесты на учебных дронах (DJI Tello)</li>
+                <li>Базовая коммуникация и распределение задач</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="icon-badge"><i class="bi bi-lightning-charge"></i></div>
+                <h5 class="mb-0">Версия 1.0</h5>
+              </div>
+              <ul class="small lead-muted mb-0">
+                <li>Автономное планирование маршрутов</li>
+                <li>Антиколлизия и перестроение роя</li>
+                <li>Интеграция CV-модулей (детекция/след)</li>
+                <li>Веб-консоль миссий (оператор)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="https://github.com/Kristina42461/DroneScan" class="btn btn-brand btn-lg"><i
+            class="bi bi-github me-2"></i>Посмотреть на GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section id="usecases" class="section">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-5">Области применения</h2>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <i class="bi bi-cloud-sun fs-2 mb-2"></i>
+              <h5>Экологический мониторинг</h5>
+              <p class="small lead-muted mb-0">Учёт биоразнообразия, обнаружение загрязнений, мониторинг пожаров и
+                наводнений.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <i class="bi bi-signpost-split fs-2 mb-2"></i>
+              <h5>Геология и картография</h5>
+              <p class="small lead-muted mb-0">Съёмка рельефа, 3D-реконструкция, построение высокоточных карт местности.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <i class="bi bi-life-preserver fs-2 mb-2"></i>
+              <h5>Поисково-спасательные</h5>
+              <p class="small lead-muted mb-0">Быстрый облёт территории, обнаружение людей, доставка медикаментов.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100">
+            <div class="card-body">
+              <i class="bi bi-snow fs-2 mb-2"></i>
+              <h5>Экстремальные локации</h5>
+              <p class="small lead-muted mb-0">Работа в зонах риска: горы, пещеры, промобъекты, вулканы, ледники.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH -->
+  <section id="tech" class="section">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-4">Технологии</h2>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5><i class="bi bi-cpu me-2"></i>Сейчас (MVP)</h5>
+              <ul class="small lead-muted mb-0">
+                <li>Python 3.10+, алгоритмы CBBA‑lite / Hybrid coverage / Energy‑aware RTB</li>
+                <li>Управление учебными дронами: DJI Tello через <code>djitellopy</code></li>
+                <li>Видео/изображения: OpenCV, PyAV</li>
+                <li>Численные вычисления: NumPy</li>
+                <li>Модели/исследования: PyTorch (библиотека установлена)</li>
+              </ul>
+              <div class="divider"></div>
+              <span class="badge rounded-pill badge-tech me-1">Python 3.10+</span>
+              <span class="badge rounded-pill badge-tech me-1">djitellopy</span>
+              <span class="badge rounded-pill badge-tech me-1">OpenCV</span>
+              <span class="badge rounded-pill badge-tech me-1">PyAV</span>
+              <span class="badge rounded-pill badge-tech">NumPy</span>
+              <span class="badge rounded-pill badge-tech ms-1">PyTorch</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5><i class="bi bi-diagram-2 me-2"></i>Дорожная карта (в планах)</h5>
+              <ul class="small lead-muted mb-0">
+                <li>ROS2 и MAVLink/MAVSDK, поддержка PX4/ArduPilot</li>
+                <li>API и телеметрия: FastAPI + WebSocket; веб‑консоль оператора (React)</li>
+                <li>CV‑модули: детекция/трекер на edge; ONNX Runtime</li>
+                <li>SLAM/VO и семантические карты местности</li>
+                <li>GStreamer для мультимедийного конвейера</li>
+              </ul>
+              <div class="divider"></div>
+              <span class="badge rounded-pill badge-tech me-1">ROS2</span>
+              <span class="badge rounded-pill badge-tech me-1">MAVLink/MAVSDK</span>
+              <span class="badge rounded-pill badge-tech me-1">PX4/ArduPilot</span>
+              <span class="badge rounded-pill badge-tech me-1">FastAPI</span>
+              <span class="badge rounded-pill badge-tech me-1">WebSocket</span>
+              <span class="badge rounded-pill badge-tech me-1">React</span>
+              <span class="badge rounded-pill badge-tech me-1">ONNX Runtime</span>
+              <span class="badge rounded-pill badge-tech">GStreamer</span>
+              <div class="small lead-muted mt-2">Эти пункты не реализованы в текущем репозитории и обозначены как
+                roadmap.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section id="benefits" class="section">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-4">Преимущества для заказчиков</h2>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 text-center p-3">
+            <div class="icon-badge mx-auto mb-2"><i class="bi bi-shield-check"></i></div>
+            <h6>Безопасность</h6>
+            <p class="small lead-muted mb-0">Снижение рисков для людей в опасных условиях.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 text-center p-3">
+            <div class="icon-badge mx-auto mb-2"><i class="bi bi-graph-up"></i></div>
+            <h6>Эффективность</h6>
+            <p class="small lead-muted mb-0">Автономные миссии экономят время и ресурсы.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 text-center p-3">
+            <div class="icon-badge mx-auto mb-2"><i class="bi bi-boxes"></i></div>
+            <h6>Масштабируемость</h6>
+            <p class="small lead-muted mb-0">От учебных роях до промышленных флотов.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="card h-100 text-center p-3">
+            <div class="icon-badge mx-auto mb-2"><i class="bi bi-plug"></i></div>
+            <h6>Простая интеграция</h6>
+            <p class="small lead-muted mb-0">Гибкая архитектура и API под инфраструктуру клиента.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKET -->
+  <section id="market" class="section">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-4">Рынок и модель дохода</h2>
+      <div class="row g-4">
+        <div class="col-lg-12">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5>Кому это нужно</h5>
+              <ul class=" lead-muted mb-0">
+                <li>Эко- и лесные службы, МЧС/поисково-спасательные отряды</li>
+                <li>Геологоразведка, добывающие и промышленные компании</li>
+                <li>Университеты и исследовательские центры</li>
+              </ul>
+              <div class="divider"></div>
+              <h5 class="mb-2">Монетизация</h5>
+              <ul class=" lead-muted mb-0">
+                <li>Лицензии на ПО (SaaS/On-Prem)</li>
+                <li>Интеграция и обучение команд</li>
+                <li>Поддержка и сервисные контракты (SLA)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team" class="section">
+    <div class="container">
+      <h2 class="fw-bold text-center mb-4">Команда</h2>
+      <div class="row g-4 justify-content-center">
+        <!-- кто то 1 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 text-center">
+            <div class="card-body">
+              <img src="assets/founder.jpg" class="rounded-circle mb-3" width="92" height="92" alt="">
+              <h5 class="mb-0">Кристина Сапожникова</h5>
+              <div class="small lead-muted">Основатель • Руководитель проекта</div>
+              <p class="small lead-muted mt-3 mb-0">ИИ, мультиагентные системы, компьютерное зрение, планирование
+                миссий.</p>
+            </div>
+          </div>
+        </div>
+        <!-- кто то 2 -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 text-center">
+            <div class="card-body">
+              <img src="assets/founder.jpg" class="rounded-circle mb-3" width="92" height="92" alt="">
+              <h5 class="mb-0">Кристина Сапожникова</h5>
+              <div class="small lead-muted">Основатель • Руководитель проекта</div>
+              <p class="small lead-muted mt-3 mb-0">ИИ, мультиагентные системы, компьютерное зрение, планирование
+                миссий.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="row g-4 align-items-start">
+        <div class="col-lg-6">
+          <h2 class="fw-bold">Связаться</h2>
+          <div class="card">
+            <div class="card-body">
+              <!-- Formspree/Backend placeholder: замените action -->
+              <form action="https://formspree.io/f/your-id" method="POST" class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Имя</label>
+                  <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Email</label>
+                  <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Компания</label>
+                  <input type="text" name="company" class="form-control">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Сообщение</label>
+                  <textarea name="message" rows="5" class="form-control" placeholder="Опишите кейс" required></textarea>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                  <button type="submit" class="btn btn-brand"><i class="bi bi-send me-2"></i>Отправить</button>
+                  <a href="mailto:kiber42461@gmail.com" class="btn btn-ghost"><i
+                      class="bi bi-envelope me-2"></i>kiber42461@gmail.com</a>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="small lead-muted mt-2">Нажимая «Отправить», вы соглашаетесь с обработкой персональных данных.
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5>Реквизиты</h5>
+              <ul class="small lead-muted mb-3">
+                <li>ООО «ДронСкан»</li>
+                <li>ИНН: 0268103049 </li>
+                <li>ОГРН:  1240200038066</li>
+              </ul>
+              <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-ghost" href="https://github.com/Kristina42461/DroneScan"><i
+                    class="bi bi-github me-2"></i>GitHub</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer py-4">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <div class="row">
+        <span class="col-9 col-md-10 col-lg-11" style="font-size: 10px;">Проект создан при поддержке Федерального государственного
+          бюджетного учреждения «Фонд содействия развитию малых форм предприятий в научно-технической сфере» в рамках
+          программы «Студенческий стартап» федерального проекта «Платформа университетского технологического
+          предпринимательства»</span>
+        <img  src="img/head_logo_fasie.png" class="col-3 col-md-2 col-lg-1" alt="" style="object-fit: contain;">
+      </div>
+      <br>
+
+    </div>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <div>© <span id="year"></span> ДронСкан. Все права защищены.</div>
+
+      <div class="small">
+        <a href="#" class="me-3">Политика конфиденциальности</a>
+        <a href="#">Правовая информация</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to top -->
+  <button id="scrollTop" class="btn btn-brand scrolltop" aria-label="Наверх">
+    <i class="bi bi-arrow-up"></i>
+  </button>
+
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // активный пункт меню при скролле
+    const scrollSpy = new bootstrap.ScrollSpy(document.body, { target: '#mainNav', offset: 80 });
+
+    // текущий год
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // плавный скролл
+    document.querySelectorAll('a.nav-link, a.btn, a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const href = a.getAttribute('href');
+        if (href && href.startsWith('#') && href.length > 1) {
+          e.preventDefault();
+          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+        }
+      })
+    });
+
+    // кнопка «наверх»
+    const st = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => { st.style.display = window.scrollY > 600 ? 'block' : 'none'; });
+    st.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  </script>
+</body>
+
+</html>
